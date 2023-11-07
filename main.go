@@ -21,9 +21,18 @@ func main() {
 
 	switch args[0] {
 	case "list":
-		solution.List()
+		fmt.Println("\nAvailable solutions (aka keys):")
+		for _, k := range solution.List() {
+			fmt.Printf("  * %s\n", k)
+		}
 	case "run":
 		run(args[1])
+	case "all":
+		for _, k := range solution.List() {
+			fmt.Printf("\n%s\n", k)
+			run(k)
+		}
+
 	case "stubs":
 		start(args[1])
 	default:
@@ -100,15 +109,15 @@ func fetchInput(year, day string) string {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == http.StatusOK {
-		bodyBytes, err := io.ReadAll(resp.Body)
-		if err != nil {
-			panic(err)
-		}
-		return string(bodyBytes)
+	if resp.StatusCode != http.StatusOK {
+		panic(fmt.Sprintf("input fetch returned unexpected status: %d", resp.StatusCode))
 	}
 
-	panic(fmt.Sprintf("input fetch returned unexpected status: %d", resp.StatusCode))
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	return string(bodyBytes)
 }
 
 //go:embed templates/*

@@ -9,12 +9,12 @@ import (
 var {{ .FuncName }}Input = `xxx
 	yyy`
 
-func Test_{{ .FuncName }}1(t *testing.T) {
+func Test_{{ .Year }}_Day_{{ .Day }}_Part_1_Example(t *testing.T) {
 	result := {{ .FuncName }}1({{ .FuncName }}Input)
 	assert.Equal(t, "right", result)
 }
 
-func Test_{{ .FuncName }}2(t *testing.T) {
+func Test_{{ .Year }}_Day_{{ .Day }}_Part_2_Example(t *testing.T) {
 	result := {{ .FuncName }}2({{ .FuncName }}Input)
 	assert.Equal(t, "still right!", result)
 }

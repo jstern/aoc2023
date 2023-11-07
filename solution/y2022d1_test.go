@@ -6,23 +6,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_y2022d1part1(t *testing.T) {
-	inp := `1000
-	2000
-	3000
-	
-	4000
-	
-	5000
-	6000
-	
-	7000
-	8000
-	9000
-	
-	10000`
+var y2022d1partInput = `xxx
+	yyy`
 
-	result := y2022d1part1(inp)
-
+func Test_2022_1_Part_1_Example(t *testing.T) {
+	result := y2022d1part1(y2022d1partInput)
 	assert.Equal(t, "wrong", result)
+}
+
+func Test_2022_1_Part_2_Example(t *testing.T) {
+	result := y2022d1part2(y2022d1partInput)
+	assert.Equal(t, "wrong again", result)
 }
