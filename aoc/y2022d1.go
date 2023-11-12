@@ -1,8 +1,9 @@
-package solution
+package aoc
 
 func init() {
-	register("2022:1:1", y2022d1part1)
-	register("2022:1:2", y2022d1part2)
+	registerSolution("2022:1:1", y2022d1part1)
+	registerSolution("2022:1:2", y2022d1part2)
+
 }
 
 func y2022d1part1(input string) string {

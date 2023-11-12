@@ -18,5 +18,11 @@ test: gotestsum
 gotestsum:
 	go install gotest.tools/gotestsum@latest
 
-lint:
+lint: fmt
 	golangci-lint run ./...
+
+fmt:
+	go fmt ./...
+
+cov:
+	go tool cover -html=coverage.out

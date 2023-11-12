@@ -13,7 +13,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/jstern/aoc2023/solution"
+	"github.com/jstern/aoc2023/aoc"
 )
 
 func main() {
@@ -22,19 +22,18 @@ func main() {
 	switch args[0] {
 	case "list":
 		fmt.Println("\nAvailable solutions (aka keys):")
-		for _, k := range solution.List() {
+		for _, k := range aoc.ListSolutions() {
 			fmt.Printf("  * %s\n", k)
 		}
 	case "run":
 		run(args[1])
 	case "all":
-		for _, k := range solution.List() {
+		for _, k := range aoc.ListSolutions() {
 			fmt.Printf("\n%s\n", k)
 			run(k)
 		}
-
 	case "stubs":
-		start(args[1])
+		stubs(args[1])
 	default:
 		panic("first arg must be 'run' or 'start'")
 	}
@@ -48,7 +47,7 @@ type result struct {
 }
 
 func run(key string) {
-	attempt := solution.For(key)
+	attempt := aoc.SolutionFor(key)
 	if attempt == nil {
 		fmt.Println("no solution available for key")
 		os.Exit(1)
@@ -66,17 +65,16 @@ func run(key string) {
 		panic(err)
 	}
 
-	res := make(chan result)
+	rc := make(chan result)
 	go func() {
 		start := time.Now()
 		answer := attempt(input)
-		result := result{answer, time.Since(start)}
-		res <- result
+		rc <- result{answer, time.Since(start)}
 	}()
 
 	select {
-	case result := <-res:
-		fmt.Printf("---\nAnswer in %v\n---\n%s\n", result.duration, result.answer)
+	case res := <-rc:
+		fmt.Printf("---\nAnswer in %v\n---\n%s\n", res.duration, res.answer)
 	case <-time.After(time.Duration(wait) * time.Second):
 		fmt.Println("Too slow!")
 	}
@@ -123,20 +121,20 @@ func fetchInput(year, day string) string {
 //go:embed templates/*
 var templateFS embed.FS
 
-func start(key string) {
+func stubs(key string) {
 	year, day := parseKey(key)
 
 	// bail if source/test files already exist
 
 	srcName := fmt.Sprintf("y%sd%s.go", year, day)
-	srcPath := filepath.Join("solution", srcName)
+	srcPath := filepath.Join("aoc", srcName)
 	_, err := os.Stat(srcPath)
 	if !errors.Is(err, os.ErrNotExist) {
 		panic(fmt.Sprintf("%s exists", srcPath))
 	}
 
 	tstName := fmt.Sprintf("y%sd%s_test.go", year, day)
-	tstPath := filepath.Join("solution", tstName)
+	tstPath := filepath.Join("aoc", tstName)
 	_, err = os.Stat(srcPath)
 	if !errors.Is(err, os.ErrNotExist) {
 		panic(fmt.Sprintf("%s exists", tstPath))
@@ -157,13 +155,19 @@ func start(key string) {
 	if err != nil {
 		panic(err)
 	}
-	tmp.ExecuteTemplate(srcOut, "solution.go.tmpl", data)
+	err = tmp.ExecuteTemplate(srcOut, "solution.go.tmpl", data)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Printf("created %s\n", srcPath)
 
 	tstOut, err := os.OpenFile(tstPath, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		panic(err)
 	}
-	tmp.ExecuteTemplate(tstOut, "solution_test.go.tmpl", data)
+	err = tmp.ExecuteTemplate(tstOut, "solution_test.go.tmpl", data)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Printf("created %s\n", tstPath)
 }
