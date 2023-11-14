@@ -21,11 +21,8 @@ Note that keys **must** be prefixed `YYYY:D:` ... this is how the runner fetches
 The stubs target sets up the common situation of wanting to run a part 1 and part 2, but you can add additional solutions by providing another correctly prefixed `key`, e.g.
 
 ```go
-# y2023d1.go
+// y2023d1.go
 package aoc
-
-init() {
-    package aoc
 
 func init() {
         registerSolution("2023:1:1", y2023d1part1)
