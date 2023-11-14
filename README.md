@@ -43,8 +43,6 @@ func y2023d1part1brute(input string) string {
 }
 ```
 
-Note that keys **must** be prefixed `YYYY:D:` ... this is how the runner fetches the puzzle input from the advent of code site.
-
 ## Run a given solution
 
 ### Fetching puzzle input
