@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"text/template"
 	"time"
+
+	"github.com/PuerkitoBio/goquery"
 
 	"github.com/jstern/aoc2023/aoc"
 )
@@ -27,6 +30,12 @@ func main() {
 		}
 	case "run":
 		run(args[1])
+	case "submit":
+		res := run(args[1])
+		if res != nil {
+			fmt.Println("===\nSubmitting...\n===")
+			fmt.Println(submit(args[1], res.answer))
+		}
 	case "all":
 		for _, k := range aoc.ListSolutions() {
 			fmt.Printf("\n%s\n", k)
@@ -46,7 +55,7 @@ type result struct {
 	duration time.Duration
 }
 
-func run(key string) {
+func run(key string) *result {
 	attempt := aoc.SolutionFor(key)
 	if attempt == nil {
 		fmt.Println("no solution available for key")
@@ -74,9 +83,11 @@ func run(key string) {
 
 	select {
 	case res := <-rc:
-		fmt.Printf("---\nAnswer in %v\n---\n%s\n", res.duration, res.answer)
+		fmt.Printf("\nAnswer in %v\n---\n%s\n", res.duration, res.answer)
+		return &res
 	case <-time.After(time.Duration(wait) * time.Second):
 		fmt.Println("Too slow!")
+		return nil
 	}
 }
 
@@ -116,6 +127,44 @@ func fetchInput(year, day string) string {
 		panic(err)
 	}
 	return string(bodyBytes)
+}
+
+func submit(key, answer string) string {
+	year, day := parseKey(key)
+	level := strings.Split(key, ":")[2]
+	token := strings.TrimSpace(os.Getenv("AOC_SESSION"))
+
+	form := url.Values{}
+	form.Add("answer", answer)
+	form.Add("level", level)
+
+	url := fmt.Sprintf("https://adventofcode.com/%s/day/%s/answer", year, day)
+
+	var client http.Client
+	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader(form.Encode()))
+	if err != nil {
+		panic(err)
+	}
+
+	req.Header.Set("Cookie", "session="+token)
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		panic(fmt.Sprintf("submit post returned unexpected status: %d", resp.StatusCode))
+	}
+
+	doc, err := goquery.NewDocumentFromReader(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	return doc.Find("main article").First().Text()
 }
 
 //go:embed templates/*

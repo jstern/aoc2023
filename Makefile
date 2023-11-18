@@ -3,6 +3,10 @@ export AOC_SESSION ?= $(shell cat .aoc-session)
 run:
 	@go run main.go run $(key)
 
+
+submit:
+	@go run main.go submit $(key)
+
 all:
 	@go run main.go all
 
