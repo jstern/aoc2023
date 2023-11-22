@@ -20,5 +20,8 @@
 # Go workspace file
 go.work
 
+# Because I opened this accidentally in IntellJ
+.idea/
+
 # AOC specific stuff
 .aoc-session
