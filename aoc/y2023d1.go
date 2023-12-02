@@ -45,40 +45,45 @@ func y2023d1part2(input string) string {
 
 var numberWords = map[string]string{"one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6", "seven": "7", "eight": "8", "nine": "9"}
 
-func calibrationValue(line string) int {
-	lo := len(line)
-	d1 := ""
-	hi := -1
-	d2 := ""
-	for n, v := range numberWords {
-		ni := strings.Index(line, n)
-		if ni >= 0 {
-			lni := strings.LastIndex(line, n)
-			if lni > hi {
-				hi = lni
-				d2 = v
-			}
-			if ni <= lo {
-				lo = ni
-				d1 = v
-			}
-		}
-		vi := strings.Index(line, v)
-		if vi >= 0 {
-			lvi := strings.LastIndex(line, v)
-			if lvi > hi {
-				hi = lvi
-				d2 = v
-			}
-			if vi <= lo {
-				lo = vi
-				d1 = v
-			}
-		}
+type calibrationCalc struct {
+	lo int
+	d1 string
+	hi int
+	d2 string
+}
+
+func (c *calibrationCalc) update(first, last int, val string) {
+	if first < 0 {
+		return
 	}
-	res, err := strconv.Atoi(d1 + d2)
+	if last > c.hi {
+		c.hi = last
+		c.d2 = val
+	}
+	if first <= c.lo {
+		c.lo = first
+		c.d1 = val
+	}
+}
+
+func (c calibrationCalc) result() int {
+	res, err := strconv.Atoi(c.d1 + c.d2)
 	if err != nil {
 		panic(err)
 	}
 	return res
+}
+
+func calibrationValue(line string) int {
+	calc := &calibrationCalc{lo: len(line), hi: -1}
+	for n, v := range numberWords {
+		ni := strings.Index(line, n)
+		lni := strings.LastIndex(line, n)
+		calc.update(ni, lni, v)
+
+		vi := strings.Index(line, v)
+		lvi := strings.LastIndex(line, v)
+		calc.update(vi, lvi, v)
+	}
+	return calc.result()
 }
