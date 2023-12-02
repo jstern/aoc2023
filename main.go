@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -84,6 +85,7 @@ func run(key string) *result {
 	select {
 	case res := <-rc:
 		fmt.Printf("\nAnswer in %v\n---\n%s\n", res.duration, res.answer)
+		logSolution(key, res)
 		return &res
 	case <-time.After(time.Duration(wait) * time.Second):
 		fmt.Println("Too slow!")
@@ -100,6 +102,11 @@ func parseKey(key string) (string, string) {
 }
 
 func fetchInput(year, day string) string {
+	cached := cachedInput(year, day)
+	if cached != "" {
+		fmt.Println("Using cached input")
+		return cached
+	}
 	token := strings.TrimSpace(os.Getenv("AOC_SESSION"))
 
 	url := fmt.Sprintf("https://adventofcode.com/%s/day/%s/input", year, day)
@@ -126,7 +133,29 @@ func fetchInput(year, day string) string {
 	if err != nil {
 		panic(err)
 	}
+	err = cacheInput(year, day, bodyBytes)
+	if err != nil {
+		fmt.Printf("error saving input: %v\n", err)
+	}
 	return string(bodyBytes)
+}
+
+func cachedInput(year, day string) string {
+	inpPath := filepath.Join(".aoc", fmt.Sprintf("input-%s-%s.txt", year, day))
+	b, err := os.ReadFile(inpPath)
+	if err != nil {
+		return ""
+	}
+	return string(b)
+}
+
+func cacheInput(year, day string, inp []byte) error {
+	inpPath := filepath.Join(".aoc", fmt.Sprintf("input-%s-%s.txt", year, day))
+	err := os.WriteFile(inpPath, inp, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func submit(key, answer string) string {
@@ -219,4 +248,19 @@ func stubs(key string) {
 		panic(err)
 	}
 	fmt.Printf("created %s\n", tstPath)
+}
+
+func logSolution(key string, res result) {
+	f, err := os.OpenFile(
+		filepath.Join(".aoc", "log.txt"),
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0644,
+	)
+	if err != nil {
+		log.Println(err)
+	}
+	defer f.Close()
+	if _, err = f.WriteString(fmt.Sprintf("%s: Answer in %v: %s\n", key, res.duration, res.answer)); err != nil {
+		log.Println(err)
+	}
 }

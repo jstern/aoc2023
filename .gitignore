@@ -25,3 +25,4 @@ go.work
 
 # AOC specific stuff
 .aoc-session
+.aoc/*.txt
