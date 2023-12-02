@@ -3,7 +3,6 @@ export AOC_SESSION ?= $(shell cat .aoc-session)
 run:
 	@go run main.go run $(key)
 
-
 submit:
 	@go run main.go submit $(key)
 
@@ -16,10 +15,12 @@ stubs:
 list:
 	@go run main.go list
 
-test:
-	gotestsum --format=testdox -- -coverprofile=coverage.out ./...
 
-install:
+gts := $(shell which gotestsum)
+test: $(gts)
+	$(gts) --format=testdox -- -coverprofile=coverage.out ./...
+
+$(gts):
 	go install gotest.tools/gotestsum@latest
 
 lint: fmt
