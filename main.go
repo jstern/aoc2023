@@ -30,12 +30,19 @@ func main() {
 			fmt.Printf("  * %s\n", k)
 		}
 	case "run":
-		run(args[1])
+		key := args[1]
+		res := run(key)
+		if res != nil {
+			logAttempt(key, *res)
+		}
 	case "submit":
-		res := run(args[1])
+		key := args[1]
+		res := run(key)
 		if res != nil {
 			fmt.Println("===\nSubmitting...\n===")
-			fmt.Println(submit(args[1], res.answer))
+			submitRes := submit(key, *res)
+			fmt.Println(submitRes)
+			logAttempt(key, *res, submitRes)
 		}
 	case "all":
 		for _, k := range aoc.ListSolutions() {
@@ -85,7 +92,6 @@ func run(key string) *result {
 	select {
 	case res := <-rc:
 		fmt.Printf("\nAnswer in %v\n---\n%s\n", res.duration, res.answer)
-		logSolution(key, res)
 		return &res
 	case <-time.After(time.Duration(wait) * time.Second):
 		fmt.Println("Too slow!")
@@ -158,13 +164,13 @@ func cacheInput(year, day string, inp []byte) error {
 	return nil
 }
 
-func submit(key, answer string) string {
+func submit(key string, result result) string {
 	year, day := parseKey(key)
 	level := strings.Split(key, ":")[2]
 	token := strings.TrimSpace(os.Getenv("AOC_SESSION"))
 
 	form := url.Values{}
-	form.Add("answer", answer)
+	form.Add("answer", result.answer)
 	form.Add("level", level)
 
 	url := fmt.Sprintf("https://adventofcode.com/%s/day/%s/answer", year, day)
@@ -250,7 +256,7 @@ func stubs(key string) {
 	fmt.Printf("created %s\n", tstPath)
 }
 
-func logSolution(key string, res result) {
+func logAttempt(key string, res result, messages ...string) {
 	f, err := os.OpenFile(
 		filepath.Join(".aoc", "log.txt"),
 		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
@@ -260,7 +266,10 @@ func logSolution(key string, res result) {
 		log.Println(err)
 	}
 	defer f.Close()
-	if _, err = f.WriteString(fmt.Sprintf("%s: Answer in %v: %s\n", key, res.duration, res.answer)); err != nil {
-		log.Println(err)
+
+	logger := log.New(f, "", log.LstdFlags)
+	logger.Printf("[%s] Answer in %v: %s\n", key, res.duration, res.answer)
+	for _, msg := range messages {
+		logger.Printf("[%s] %s", key, msg)
 	}
 }
