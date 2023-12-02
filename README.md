@@ -44,7 +44,7 @@ func y2023d1part1brute(input string) string {
 
 ### Fetching puzzle input
 
-The runner attempts to fetch input from `https://adventofcode.com/YYYY/day/D/input` given a key prefixed `YYYY:D:`. You'll need to paste a valid adventofcode.com session cookie value in `.aoc-session` for this to work.
+The runner attempts to fetch input from `https://adventofcode.com/YYYY/day/D/input` given a key prefixed `YYYY:D:`. You'll need to paste a valid adventofcode.com session cookie value in a file named `.aoc-session` in this directory.
 
 ### Running a solution
 
