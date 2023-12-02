@@ -183,7 +183,8 @@ linters:
   disable-all: true
   enable:
     ## enabled by default
-    - errcheck # checking for unchecked errors, these unchecked errors can be critical bugs in some cases
+    # skip errcheck it's advent of code you weirdo
+    #- errcheck # checking for unchecked errors, these unchecked errors can be critical bugs in some cases
     - gosimple # specializes in simplifying a code
     - govet # reports suspicious constructs, such as Printf calls whose arguments do not align with the format string
     - ineffassign # detects when assignments to existing variables are not used

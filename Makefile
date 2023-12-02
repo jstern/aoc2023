@@ -16,10 +16,10 @@ stubs:
 list:
 	@go run main.go list
 
-test: gotestsum
+test:
 	gotestsum --format=testdox -- -coverprofile=coverage.out ./...
 
-gotestsum:
+install:
 	go install gotest.tools/gotestsum@latest
 
 lint: fmt
