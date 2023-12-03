@@ -40,7 +40,7 @@ type cubeGame struct {
 }
 
 func parseCubeGame(desc string) cubeGame {
-	// the Elf will reach into the bag, grab a handful of random cubes, show them to you, and then *put them back*8 in the bag
+	// the Elf will reach into the bag, grab a handful of random cubes, show them to you, and then *put them back* in the bag
 	g := cubeGame{maxPull: make(map[string]int)}
 	details := cubeGameRe.FindStringSubmatch(desc)
 	g.id, _ = strconv.Atoi(details[1])
