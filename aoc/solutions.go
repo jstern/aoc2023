@@ -1,6 +1,7 @@
 package aoc
 
 import (
+	"os"
 	"sort"
 )
 
@@ -26,4 +27,8 @@ func ListSolutions() []string {
 	}
 	sort.Strings(keys)
 	return keys
+}
+
+func VerboseEnabled() bool {
+	return os.Getenv("AOC_VERBOSE") == "1"
 }

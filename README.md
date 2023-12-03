@@ -95,3 +95,20 @@ Submitting...
 ===
 That's not the right answer.  If you're stuck, make sure you're using the full input data; there are also some general tips on the about page, or you can ask for hints on the subreddit.  Because you have guessed incorrectly 4 times on this puzzle, please wait 5 minutes before trying again. [Return to Day 15]
 ```
+
+### Being suspicious
+
+If you're worried about your logic and want to use print statements to see what's going on, but you don't want to see that junk automatically every time, you can set `AOC_VERBOSE=1` in the environment and wrap your output code in a check:
+
+```go
+if VerboseEnabled() {
+    fmt.Println(
+        `some really long but probably cool looking string
+        that totally shows you where you've messed up`
+    )
+}
+```
+
+### Being aware
+
+The `run` and `submit` targets will append information about the run to `.aoc/log.txt` so you can see which answers you've already come up with, and (for `submit`) what the site said about them.
