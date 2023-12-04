@@ -1,6 +1,11 @@
 package junk
 
-import "github.com/samber/lo"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/samber/lo"
+)
 
 // here's a nice unnecessary detour
 
@@ -55,4 +60,15 @@ func (s Set[T]) Difference(s2 Set[T]) Set[T] {
 	return lo.PickBy(s, func(k T, _ struct{}) bool {
 		return !s2.Contains(k)
 	})
+}
+
+func (s Set[T]) String() string {
+	str := "{"
+	str += strings.Join(lo.Map(lo.Keys(s), func(v T, _ int) string { return fmt.Sprintf("%v", v) }), ", ")
+	str += "}"
+	return str
+}
+
+func (s Set[T]) Values() []T {
+	return lo.Keys(s)
 }

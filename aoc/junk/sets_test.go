@@ -84,3 +84,8 @@ func Test_SetDifference(t *testing.T) {
 	assert.True(t, s2s1.Contains('e'))
 	assert.False(t, s2s1.Contains('c'))
 }
+
+func Test_SetValues(t *testing.T) {
+	s := junk.NewSet('a', 'b', 'c')
+	assert.ElementsMatch(t, s.Values(), []rune{'a', 'b', 'c'})
+}
