@@ -82,6 +82,8 @@ By default, the runner is not so patient ... it'll wait 5 minutes for an answer 
 
 ### Being confident
 
+**Note: this was working for a while, but has stopped working; seems like posts made by my code are receiving 302 responses without bodies now?**
+
 To automatically post a solution and see if the answer is correct, use `make submit`:
 
 ```

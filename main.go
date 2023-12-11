@@ -175,7 +175,11 @@ func submit(key string, result result) string {
 
 	url := fmt.Sprintf("https://adventofcode.com/%s/day/%s/answer", year, day)
 
-	var client http.Client
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
 	req, err := http.NewRequest(http.MethodPost, url, strings.NewReader(form.Encode()))
 	if err != nil {
 		panic(err)
@@ -190,7 +194,7 @@ func submit(key string, result result) string {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusFound {
 		panic(fmt.Sprintf("submit post returned unexpected status: %d", resp.StatusCode))
 	}
 
