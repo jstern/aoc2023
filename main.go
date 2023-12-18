@@ -117,6 +117,8 @@ func fetchInput(year, day string) string {
 
 	url := fmt.Sprintf("https://adventofcode.com/%s/day/%s/input", year, day)
 
+	fmt.Printf("Fetching input from %s\n", url)
+
 	var client http.Client
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -131,14 +133,16 @@ func fetchInput(year, day string) string {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		panic(fmt.Sprintf("input fetch returned unexpected status: %d", resp.StatusCode))
-	}
-
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		panic(err)
 	}
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println(string(bodyBytes))
+		panic(fmt.Sprintf("input fetch returned unexpected status: %d", resp.StatusCode))
+	}
+
 	err = cacheInput(year, day, bodyBytes)
 	if err != nil {
 		fmt.Printf("error saving input: %v\n", err)
