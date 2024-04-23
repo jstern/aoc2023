@@ -38,8 +38,8 @@ func y2023d16part1(input string) string {
 			}
 		}
 
-		// fmt.Println(junk.SideBySide("  ", h.PathString(), h.EnergyString()))
-		// fmt.Println()
+		fmt.Println(junk.SideBySide("  ", h.PathString(), h.EnergyString()))
+		fmt.Println()
 
 		if len(h.beams) == 0 {
 			break
